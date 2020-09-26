@@ -11,9 +11,9 @@ output:
   distill::distill_article:
     toc: true
     toc_depth: 2
-    css: "05-Resources/styles.css"
+    css: "D:/01-Data-Science/01-RStudio-Projects/Learning-Python/05-Resources/styles.css"
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -22,26 +22,249 @@ editor_options:
 knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
-  echo = FALSE
+  echo = TRUE
 )
-
-# --- Data Wrangling ---
-library(tidyverse)
-library(janitor)
-library(arrow)
-library(lubridate)
-library(hms)
-
-# --- Modeling Time Series ---
-library(timetk)
-library(anomalize) # for outlier detection
-
 
 # --- Paths Management ---
 library(here)
 
+# --- R to Python ---
+library(reticulate)
+reticulate::use_condaenv("anaconda3")
 
 # --- Source ggplot2 themes ---
 source("D:/01-Data-Science/03-Helper-Scripts/ggplot2_themes.R")
 ```
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+# 1. Introduction: Comments and Variables
+
+We'll start by talking about variable and comments.
+
+## 1.1 Simple comments
+
+Using comments throughout your code is an extremely good practice. It will help to order your ideas and keep notes to indicate what's the code doing and what was your train of thought to get to those lines of code. 
+
+In `Python`, it's super easy to insert a comment. A comment, as in `R`, can be indicated by the `#` symbol. For example:
+
+```{python simple-comment}
+# This is a comment.
+```
+
+However, in `Python` there's a special kind of comment called `docstring`. A _dosctring_ is used to define a function's purpose and can be created by using **triple quotes** (either double, or single).
+
+```{python docstring, eval = FALSE}
+'''
+This is a docstring created with single quotes.
+It's a multi-line comment.
+Can be created with triple quotes (single or double quotes work just fine).
+'''
+
+"""
+Another docstring, but using double quotes.
+It's still amazing!
+"""
+```
+
+
+## 1.2 Variables
+
+Variables are placeholders for values in the code. There are 3 main rules for variables:
+
+1. Variable names are case sensitive (`name` and `NAME` are different variables).
+
+2. They must start with a letter or an underscore -- but not numbers. Defining the variable `2var` is wrong.
+
+3. It can have numbers in the name, but not start with one. Thus, `var2` would be correct.
+
+Below you can find an example of how to define a variable:
+
+```{python variable-assignment}
+x_int       = 1       # integer type
+y_float     = 2.5     # float type
+name_string = "John"  # string type
+cool_bool   = True    # boolean type
+```
+
+### Multiple Assignments
+
+A useful tool is the **multiple assignment**. We can create the above variables in the following one-liner:
+
+```{python multiple-assignation}
+x_int, y_float, name_string, cool_bool = (1, 2.5, "John", True)
+```
+
+
+## 1.3 The `print()` function
+
+We can use the simple `print()` function to print the values of our variables. For example:
+
+```{python print-example}
+print(y_float)
+```
+
+## 1.4 Basic Math
+
+You can, of course, as with any other programming language, do basic arithmetic on `Python`.
+
+```{python arithmetic-example}
+# Simple arithmetic with number inputs
+1 / 2.5 * 3.1415
+```
+
+You can also do the same operations on variables:
+
+```{python variable-arithmetic}
+# Simple arithmetic with variable inputs
+x_int / y_float * 3.1415
+```
+
+## 1.5 Variable types with `type()`
+
+We can check the type of each variable with the `type()` function. This will output a string of the form: `<class 'type'>`.
+
+```{python print-types}
+type(y_float)
+
+type(x_int)
+
+type(name_string)
+
+type(cool_bool)
+```
+
+
+## 1.6 Casting
+
+**Variable casting** is the action of converting a variable from one type to another. The functions. `str()` , `int()`, `float()`, and are used to change data types. For example, let's say that we wanted to convert our `x_int` variable to a `string` type:
+
+```{python check-int-type}
+# Start by checking the type for variable x
+type(x_int)
+```
+
+
+```{python}
+# Change x to a 'string' type
+x_string = str(x_int)
+
+# Check class to confirm it has changed
+type(x_string)
+```
+
+It's important to note that, although we've created the variable `x_string` with the `str` class, the value of such string is the same as the value for the original variable (`x_int`):
+
+```{python}
+print(x_int)
+
+print(x_string)
+```
+
+
+We could also change our `y` variable to an `integer` type:
+
+```{python}
+# Start by checking the type for variable y
+type(y_float)
+```
+
+
+```{python}
+# Change y to an integer
+y_int = int(y_float)
+
+# Print it's type and the number. See how it's been rounded down to 2
+print(type(y_int), y_int)
+```
+
+### Quick exercise:
+
+What would happen if you cast the `y_int` variable back into a `float` type? What do you think would be the output of `print`-ing that variable?
+
+
+
+### Casting to a boolean type
+
+You may have noticed that we haven't mentioned how to cast to a `boolean` type. If you are **sure that the contents of the string** is either `True` or `False`, you can use the `eval()` function:
+
+```{python}
+# Define a string with a 'True' value
+boolean_string = 'True'
+
+# Check that type is a string ('str')
+type(boolean_string)
+```
+
+```{python}
+# Define new boolean with the eval() function
+casted_boolean = eval(boolean_string)
+
+# Check type again
+type(casted_boolean)
+```
+
+This would also work with a `False` string.
+
+Also do note that in the `True` or `False` strings, **the first letter is capitalized and the rest is lowercase**. This is very important because it's the proper (and only) way to define a `boolean` variable in `Python`.
+
+# 2. String Formatting & Methods
+
+Let's start by defining some strings:
+
+```{python}
+name = "Alexis"
+prog_lang = "Python"
+```
+
+## 2.1 String concatenation with the `+` operator
+
+We can use the `print()` function along with the `+` operator to concatenate `str` variables:
+
+```{python}
+print("Hi, my name is " + name + " and my programming language by choice is " + prog_lang + "!!")
+```
+
+### Be careful not to concatenate `int` or `float` variables
+
+If we try to concatenate an `int` variable, we would get an error. For example:
+
+```{python}
+fav_num = 2.718281
+```
+
+
+```{python, eval = FALSE}
+# Not run because it returns an error. Try it!
+print("Hi, my name is " + name + " and my favorite number is: " + fav_num)
+```
+
+However you already know how to fix this. If you'd like to concatenate `fav_num` you can simply cast it to a string!
+
+```{python}
+print("Hi, my name is " + name + " and my favorite number is: " + str(fav_num))
+```
+
+This works just "ok", but it's not the most efficient way to work, so now let's introduce some other methods you can do to include `int`s and `float`s inside a concatenation.
+
+## 2.2 String Formatting
 
